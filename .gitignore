@@ -1,0 +1,8 @@
+node_modules/
+dist/
+pages/
+components/
+profiles/
+results/
+*.cpuprofile
+next-env.d.ts

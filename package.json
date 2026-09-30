@@ -1,0 +1,19 @@
+{
+  "name": "repro-vinext-dev-app-stylesheet-graph-walk",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "dev": "vinext dev",
+    "measure": "node scripts/measure.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "vinext": "1.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.3.0"
+  }
+}

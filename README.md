@@ -2,9 +2,9 @@
 
 **In dev, vinext 1.0.0 reads, parses and resolves every module that `_app` and the pages import, to find their stylesheets.**
 Vite transforms the same modules for the request and records their imports in its module graph.
-With 5,000 modules the walk takes 3.2 s of the first request. It runs again after each saved script or stylesheet.
+With 5,000 modules the walk takes 3.0 s of the first request. It runs again after each saved script or stylesheet.
 
-![Graph walk time for 500, 2,000 and 5,000 modules: 287 ms, 1,018 ms and 3,219 ms](docs/scaling.png)
+![Graph walk time for 500, 2,000 and 5,000 modules: 320 ms, 1,050 ms and 2,967 ms](docs/scaling.png)
 
 ## Repro
 
@@ -33,21 +33,21 @@ Median of 7 runs. Each run starts a new dev server with a warm `node_modules/.vi
 
 | modules | files read by the walk | walk, first request | walk, after a file save | first HTML | first HTML without the walk |
 |---:|---:|---:|---:|---:|---:|
-| 500 | 502 | 287 ms | 213 ms | 1,970 ms | 1,713 ms |
-| 2,000 | 2,002 | 1,018 ms | 1,001 ms | 7,664 ms | 5,588 ms |
-| 5,000 | 5,002 | 3,219 ms | 3,052 ms | 17,899 ms | 14,395 ms |
+| 500 | 502 | 320 ms | 289 ms | 2,280 ms | 2,035 ms |
+| 2,000 | 2,002 | 1,050 ms | 1,150 ms | 7,559 ms | 6,465 ms |
+| 5,000 | 5,002 | 2,967 ms | 2,937 ms | 19,823 ms | 15,647 ms |
 
 - **walk**: wall time of the `load` hook for `virtual:vinext-pages-client-assets`, which runs the walk.
 - **files read**: `fs.readFileSync` calls made from `collectModuleDependencies`.
 - **without the walk**: the same `load` hook returns the metadata without `ssrManifest`. This is only an experiment to size the cost. In this app the HTML then has the same stylesheet links in the same order.
 
-A CPU profile of the first request (`--profile`, 5,000 modules) shows 1,518 ms of synchronous work under `collectModuleDependencies`:
+A CPU profile of the first request (`--profile`, 5,000 modules) shows 1,553 ms of synchronous work under `collectModuleDependencies`:
 
 | what | ms |
 |---|---:|
-| `fs.readFileSync` | 1,013 |
-| `parseAst` | 166 |
-| `resolve` and other | 339 |
+| `fs.readFileSync` | 910 |
+| `parseAst` | 176 |
+| `resolve` and other | 468 |
 
 The rest of the walk's wall time is spent waiting for `this.resolve`.
 
@@ -71,4 +71,4 @@ For the same request, [`collectPagesDevInitialStylesheetHeadHTML`](https://githu
 ## Environment
 
 vinext 1.0.0, vite 8.3.0, rolldown 1.2.12, react 19.2.8, Node 24.13.0, macOS 26.6, Apple M1 Max.
-Other processes ran on the machine during the runs (load average 7 to 65), so absolute times are noisy. The number of files read is the same in every run.
+Background processes kept the load average at 10 to 44 (median 22) during the runs, so absolute times are noisy. The number of files read is the same in every run.

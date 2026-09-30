@@ -6,3 +6,4 @@ profiles/
 results/
 *.cpuprofile
 next-env.d.ts
+.next/

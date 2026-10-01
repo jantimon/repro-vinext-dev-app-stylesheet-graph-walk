@@ -1,5 +1,7 @@
 # vinext Pages Router dev: the first request re-reads the whole pages import graph
 
+Issue: [cloudflare/vinext#3636](https://github.com/cloudflare/vinext/issues/3636)
+
 **In dev, vinext 1.0.0 reads, parses and resolves every module that `_app` and the pages import, to find their stylesheets.**
 Vite transforms the same modules for the request and records their imports in its module graph.
 With 5,000 modules the walk takes 3.0 s of the first request. It runs again after each saved script or stylesheet.
